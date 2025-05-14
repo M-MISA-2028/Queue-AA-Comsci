@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Queue Management App</title>
+</head>
+<style>
+	body {
+		font-family: Monaco, monospace;
+		
+		background-color: #cbdbf5;
+		color : #202e5f;
+		
+	}
+
+	#image {
+    background-image: url('pisaysay.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+    height: 250px; /* Adjust this value as needed */
+    width: 100%;
+    margin-bottom: 0;
+}
+
+	
+	#title {
+		
+	}
+	
+	
+	label {
+		width: 180px;
+		margin-bottom: 10px;
+	}
+
+	input[type="text"] {
+		padding: 5px;
+		width: 250px;
+		margin-bottom: 10px;
+		border: 2px solid #7db2ed;
+		border-radius: 7px;
+	}
+
+	input[type="button"] {
+		font-family: Monaco, monospace;
+		padding: 8px 16px;
+		background-color: #7db2ed;
+		color: white;
+		border: 2px solid #334999;
+		border-radius: 7px;
+		
+	}
+
+	input[type="button"]:hover {
+		background-color: #2980b9;
+	}
+
+	hr {
+		margin: 30px 0;
+		border: none;
+		border-top: 3px solid #4e78cf;
+	}
+
+	#output, #adminPanel {
+		background-color: #fff;
+		padding: 15px;
+		border: 2px solid #7db2ed;
+		border-radius: 7px;
+	}
+
+	button {
+		font-family: Monaco, monospace;
+		margin-left: 10px;
+		padding: 5px 10px;
+		background-color: #27ae60;
+		color: white;
+		border: 2px solid #0e8145;
+		border-radius: 3px;
+	}
+
+	button:hover {
+		background-color: #1e8449;
+	}
+	
+</style>
+<body>
+
+<div id = "image">
+
+  <h1 id = "title" >Queue Registration</h1>
+  
+</div>
+
+<hr/>
+
+  <label for="studentName">Enter your Name:</label>
+  <input type="text" id="nameInput" name="studentName"><br><br>
+  
+  <label for="studentID">Enter your Student ID:</label>
+  <input type="text" id="studentIDInput" name="studentID"><br><br>
+
+  <label for="purpose">Enter Purpose:</label>
+  <input type="text" id="purposeInput" name="purpose"><br><br>
+
+  <input type="button" onclick="addToQueue()" value="Join Queue">
+
+
+  <hr/>
+
+  <h2>Current Queue</h2>
+  <div id="output"></div>
+  
+  <hr/>
+  
+  <h2>Admin Panel</h2>
+  <div id="adminPanel"></div>
+
+  <script>
+    if (!localStorage.getItem("queue")) {
+      localStorage.setItem("queue", "");
+    }
+
+    function displayQueue() {
+      var display = document.getElementById("output");
+      display.innerHTML = "";
+
+      var queue = localStorage.getItem("queue").split(",");
+      var count = 1;
+
+      for (var i = 0; i < queue.length; i++) {
+        if (queue[i] != "") {
+          var parts = queue[i].split("|"); // name|purpose
+		display.innerHTML += count + ". " + parts[0] + " - " + parts[2] + "<br>";
+          count++;
+        }
+      }
+
+      displayAdminPanel(); // also update the admin panel
+    }
+
+    function addToQueue() {
+      var name = document.getElementById("nameInput").value;
+      var id = document.getElementById("studentIDInput").value;
+      var purpose = document.getElementById("purposeInput").value;
+
+      if (name != "" && id != "" && purpose != "") {
+        var entry = name + "|" + id + "|" + purpose;
+        var queue = localStorage.getItem("queue");
+
+        if (queue == "") {
+          queue = entry;
+        } else {
+          queue = queue + "," + entry;
+        }
+
+        localStorage.setItem("queue", queue);
+
+        document.getElementById("nameInput").value = "";
+        document.getElementById("studentIDInput").value = "";
+        document.getElementById("purposeInput").value = "";
+
+        displayQueue();
+      }
+    }
+
+    function displayAdminPanel() {
+      var admin = document.getElementById("adminPanel");
+      admin.innerHTML = "";
+
+      var queue = localStorage.getItem("queue").split(",");
+      var count = 1;
+
+      for (var i = 0; i < queue.length; i++) {
+        if (queue[i] != "") {
+          var parts = queue[i].split("|"); 
+          var name = parts[0];
+		  var id = parts[1];
+          var purpose = parts[2];
+
+          admin.innerHTML += count + ". " + name + "(" + id + ")" + " - " + purpose +
+            " <button onclick='serve(" + i + ")'>Serve</button>" +
+            " <button onclick='remove(" + i + ")'>Remove</button><br>";
+          count++;
+        }
+      }
+    }
+	
+	function serve(ordering) {
+      var queue = localStorage.getItem("queue").split(",");
+      var newQueue = "";
+      for (var i = 0; i < queue.length; i++) {
+        if (i != ordering && queue[i] != "") {
+          if (newQueue == "") {
+            newQueue = queue[i];
+          } else {
+            newQueue = newQueue + "," + queue[i];
+          }
+        }
+      }
+      localStorage.setItem("queue", newQueue);
+      displayQueue();
+    }
+
+    function remove(ordering) {
+      serve(ordering); 
+    }
+
+    displayQueue(); 
+    
+  </script>
+
+</body>
+</html>
