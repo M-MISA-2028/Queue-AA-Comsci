@@ -3,211 +3,246 @@
 <head>
   <title>Queue Management App</title>
 </head>
-<style>
-	body {
-		font-family: Monaco, monospace;
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Monaco, monospace;
+			background-color: #cbdbf5;
+			color: #202e5f;
+		}
+
+		#headerBg {
+			background-image: url('pisaysay.jpg');
+			height: 200px;
+			background-size: cover;
+			background-position: center;
+			color: white;
+			display: flex;
+			align-items: center;
+			padding: 0;       
+			margin: 0;          
+			box-sizing: border-box;
+			border: 3px solid #4e78cf;
+		}
+
+		#logo {
+			width: 80px; 
+			height: auto; 
+			margin-right: 10px;
+			margin-left: 30px;
+		}
+
+		#schoolName, #queueTitle {
+			font-size: 50px;
+			font-weight: bold;
+			text-shadow: 1px 1px 3px #000;
+			color: lightblue;
+		}
+
+		#headerBg h3,
+		#headerBg h1 {
+			margin: 0; 
+			padding: 0;
+		}
+
+		#headerBg h3 {
+			margin-left: 20px;
+		}
+
+		#headerBg h1 {
+			margin-left: 20px; 
+		}
+
+		label {
+			width: 180px;
+			margin-bottom: 10px;
+		}
+
+		input[type="text"] {
+			padding: 5px;
+			width: 250px;
+			margin-bottom: 10px;
+			border: 2px solid #7db2ed;
+			border-radius: 7px;
+		}
+
+		input[type="button"] {
+			font-family: Monaco, monospace;
+			padding: 8px 16px;
+			background-color: #7db2ed;
+			color: white;
+			border: 2px solid #334999;
+			border-radius: 7px;
+		}
+
+		input[type="button"]:hover {
+			background-color: #2980b9;
+		}
+
+		hr {
+			margin: 30px 0;
+			border: none;
+			border-top: 3px solid #4e78cf;
+		}
+
+		#container1, #container2, #container3 {
+			margin: 20px;
+		}
+
+		#output, #adminPanel {
+			background-color: #fff;
+			padding: 15px;
+			border: 2px solid #7db2ed;
+			border-radius: 7px;
+			width: 600px;
+		}
+
+		button {
+			font-family: Monaco, monospace;
+			margin-left: 10px;
+			padding: 5px 10px;
+			background-color: #27ae60;
+			color: white;
+			border: 2px solid #0e8145;
+			border-radius: 3px;
+		}
+
+		button:hover {
+			background-color: #1e8449;
+		}
+
+	</style>
+	<body>
+		<div id="headerBg">
+			<img src="pisay.png" alt="Logo" id="logo">
+			<h3 id="schoolName">PSHS-CRC</h3>
+			<h1 id="queueTitle">CANTEEN QUEUE REGISTRATION</h1>
+		</div>		
+			
+		<br>
 		
-		background-color: #cbdbf5;
-		color : #202e5f;
+		<div id="container1">
+			<h2>Student's Details:</h2>
+			<label for="studentName">Enter your Name:</label>
+			<input type="text" id="nameInput" name="studentName"><br><br>
+		  
+			<label for="studentID">Enter your Student ID:</label>
+			<input type="text" id="studentIDInput" name="studentID"><br><br>
+
+			<label for="purpose">Enter Purpose:</label>
+			<input type="text" id="purposeInput" name="purpose"><br><br>
+
+			<input type="button" onclick="addToQueue()" value="Join Queue">
+		</div>
+
+		<hr/>
 		
-	}
-
-	#image {
-    background-image: url('pisaysay.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: top;
-    height: 250px; /* Adjust this value as needed */
-    width: 100%;
-    margin-bottom: 0;
-}
-
-	
-	#title {
+		<div id="container2">
+			<h2>Current Queue:</h2>
+			<div id="output"></div>
+		</div>
 		
-	}
-	
-	
-	label {
-		width: 180px;
-		margin-bottom: 10px;
-	}
-
-	input[type="text"] {
-		padding: 5px;
-		width: 250px;
-		margin-bottom: 10px;
-		border: 2px solid #7db2ed;
-		border-radius: 7px;
-	}
-
-	input[type="button"] {
-		font-family: Monaco, monospace;
-		padding: 8px 16px;
-		background-color: #7db2ed;
-		color: white;
-		border: 2px solid #334999;
-		border-radius: 7px;
+		<hr/>
+		  
+		<div id="container3">
+			<h2>Admin Panel:</h2>
+			<div id="adminPanel"></div>	
+		</div>
 		
-	}
+		<script>
+			if (!localStorage.getItem("queue")) {
+			  localStorage.setItem("queue", "");
+			}
 
-	input[type="button"]:hover {
-		background-color: #2980b9;
-	}
+			function displayQueue() {
+			  var display = document.getElementById("output");
+			  display.innerHTML = "";
 
-	hr {
-		margin: 30px 0;
-		border: none;
-		border-top: 3px solid #4e78cf;
-	}
+			  var queue = localStorage.getItem("queue").split(",");
+			  var count = 1;
 
-	#output, #adminPanel {
-		background-color: #fff;
-		padding: 15px;
-		border: 2px solid #7db2ed;
-		border-radius: 7px;
-	}
+			  for (var i = 0; i < queue.length; i++) {
+				if (queue[i] != "") {
+				  var parts = queue[i].split("|"); // name|purpose
+				display.innerHTML += count + ". " + parts[0] + " - " + parts[2] + "<br>";
+				  count++;
+				}
+			  }
 
-	button {
-		font-family: Monaco, monospace;
-		margin-left: 10px;
-		padding: 5px 10px;
-		background-color: #27ae60;
-		color: white;
-		border: 2px solid #0e8145;
-		border-radius: 3px;
-	}
+			  displayAdminPanel(); // also update the admin panel
+			}
 
-	button:hover {
-		background-color: #1e8449;
-	}
-	
-</style>
-<body>
+			function addToQueue() {
+			  var name = document.getElementById("nameInput").value;
+			  var id = document.getElementById("studentIDInput").value;
+			  var purpose = document.getElementById("purposeInput").value;
 
-<div id = "image">
+			  if (name != "" && id != "" && purpose != "") {
+				var entry = name + "|" + id + "|" + purpose;
+				var queue = localStorage.getItem("queue");
 
-  <h1 id = "title" >Queue Registration</h1>
-  
-</div>
+				if (queue == "") {
+				  queue = entry;
+				} else {
+				  queue = queue + "," + entry;
+				}
 
-<hr/>
+				localStorage.setItem("queue", queue);
 
-  <label for="studentName">Enter your Name:</label>
-  <input type="text" id="nameInput" name="studentName"><br><br>
-  
-  <label for="studentID">Enter your Student ID:</label>
-  <input type="text" id="studentIDInput" name="studentID"><br><br>
+				document.getElementById("nameInput").value = "";
+				document.getElementById("studentIDInput").value = "";
+				document.getElementById("purposeInput").value = "";
 
-  <label for="purpose">Enter Purpose:</label>
-  <input type="text" id="purposeInput" name="purpose"><br><br>
+				displayQueue();
+			  } else {
+				alert("FILL OUT EVERYTHING");
+				}
+			}
 
-  <input type="button" onclick="addToQueue()" value="Join Queue">
+			function displayAdminPanel() {
+			  var admin = document.getElementById("adminPanel");
+			  admin.innerHTML = "";
 
+			  var queue = localStorage.getItem("queue").split(",");
+			  var count = 1;
 
-  <hr/>
+			  for (var i = 0; i < queue.length; i++) {
+				if (queue[i] != "") {
+				  var parts = queue[i].split("|"); 
+				  var name = parts[0];
+				  var id = parts[1];
+				  var purpose = parts[2];
 
-  <h2>Current Queue</h2>
-  <div id="output"></div>
-  
-  <hr/>
-  
-  <h2>Admin Panel</h2>
-  <div id="adminPanel"></div>
+				  admin.innerHTML += count + ". " + name + "(" + id + ")" + " - " + purpose +
+					" <button onclick='serve(" + i + ")'>Serve</button>" +
+					" <button onclick='remove(" + i + ")'>Remove</button><br>";
+				  count++;
+				}
+			  }
+			}
+			
+			function serve(ordering) {
+			  var queue = localStorage.getItem("queue").split(",");
+			  var newQueue = "";
+			  for (var i = 0; i < queue.length; i++) {
+				if (i != ordering && queue[i] != "") {
+				  if (newQueue == "") {
+					newQueue = queue[i];
+				  } else {
+					newQueue = newQueue + "," + queue[i];
+				  }
+				}
+			  }
+			  localStorage.setItem("queue", newQueue);
+			  displayQueue();
+			}
 
-  <script>
-    if (!localStorage.getItem("queue")) {
-      localStorage.setItem("queue", "");
-    }
+			function remove(ordering) {
+			  serve(ordering); 
+			}
 
-    function displayQueue() {
-      var display = document.getElementById("output");
-      display.innerHTML = "";
-
-      var queue = localStorage.getItem("queue").split(",");
-      var count = 1;
-
-      for (var i = 0; i < queue.length; i++) {
-        if (queue[i] != "") {
-          var parts = queue[i].split("|"); // name|purpose
-		display.innerHTML += count + ". " + parts[0] + " - " + parts[2] + "<br>";
-          count++;
-        }
-      }
-
-      displayAdminPanel(); // also update the admin panel
-    }
-
-    function addToQueue() {
-      var name = document.getElementById("nameInput").value;
-      var id = document.getElementById("studentIDInput").value;
-      var purpose = document.getElementById("purposeInput").value;
-
-      if (name != "" && id != "" && purpose != "") {
-        var entry = name + "|" + id + "|" + purpose;
-        var queue = localStorage.getItem("queue");
-
-        if (queue == "") {
-          queue = entry;
-        } else {
-          queue = queue + "," + entry;
-        }
-
-        localStorage.setItem("queue", queue);
-
-        document.getElementById("nameInput").value = "";
-        document.getElementById("studentIDInput").value = "";
-        document.getElementById("purposeInput").value = "";
-
-        displayQueue();
-      }
-    }
-
-    function displayAdminPanel() {
-      var admin = document.getElementById("adminPanel");
-      admin.innerHTML = "";
-
-      var queue = localStorage.getItem("queue").split(",");
-      var count = 1;
-
-      for (var i = 0; i < queue.length; i++) {
-        if (queue[i] != "") {
-          var parts = queue[i].split("|"); 
-          var name = parts[0];
-		  var id = parts[1];
-          var purpose = parts[2];
-
-          admin.innerHTML += count + ". " + name + "(" + id + ")" + " - " + purpose +
-            " <button onclick='serve(" + i + ")'>Serve</button>" +
-            " <button onclick='remove(" + i + ")'>Remove</button><br>";
-          count++;
-        }
-      }
-    }
-	
-	function serve(ordering) {
-      var queue = localStorage.getItem("queue").split(",");
-      var newQueue = "";
-      for (var i = 0; i < queue.length; i++) {
-        if (i != ordering && queue[i] != "") {
-          if (newQueue == "") {
-            newQueue = queue[i];
-          } else {
-            newQueue = newQueue + "," + queue[i];
-          }
-        }
-      }
-      localStorage.setItem("queue", newQueue);
-      displayQueue();
-    }
-
-    function remove(ordering) {
-      serve(ordering); 
-    }
-
-    displayQueue(); 
-    
-  </script>
-
-</body>
+			displayQueue(); 	
+		</script>
+	</body>
 </html>
